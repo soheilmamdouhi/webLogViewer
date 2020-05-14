@@ -14,9 +14,13 @@ public partial class _Default : Page
     public int intID;
     public int intStartLine;
     public String[] stringArr = new String[5];
+    public String strTempPath = "d:\\Users\\soheil\\Documents\\GitHub\\webLogViewer\\temp\\";
+    public String strLogPath = "d:\\Users\\soheil\\Documents\\GitHub\\webLogViewer\\logs\\";
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        HttpBrowserCapabilities objHttpBrowserCapabilities = Request.Browser;
+
         if (!IsPostBack)
         {
             dgridShowData.DataSource = clsServersDataManager.SelectView();
@@ -32,8 +36,13 @@ public partial class _Default : Page
         lblIDData.Text = dgridShowData.SelectedRow.Cells[1].Text;
         lblServerNameData.Text = dgridShowData.SelectedRow.Cells[2].Text;
         lblIPAddressData.Text = dgridShowData.SelectedRow.Cells[3].Text;
+        btnRead.Enabled = true;
+        btnDownload.Enabled = true;
+        lblStatus.Text = "Set";
+        lblStatus.ForeColor = System.Drawing.Color.Green;
 
-        lblMessageData.Text = "";
+        lblMessageData01.Text = "";
+        lblMessageData02.Text = "";
     }
 
     protected void btnRead_Click(object sender, EventArgs e)
@@ -42,7 +51,8 @@ public partial class _Default : Page
         {
             if ((lblIDData.Text == "") || (lblIPAddressData.Text == "") || (lblServerNameData.Text == ""))
             {
-                lblMessageData.Text = "Please select a server.";
+                lblMessageData01.Text = "Please select a server.";
+                lblMessageData02.Text = "";
             }
             else
             {
@@ -53,7 +63,8 @@ public partial class _Default : Page
 
                 stringArr = objDataTable.Rows[0].ItemArray.Select(arrServer => arrServer.ToString()).ToArray();
 
-                using (var ssh = new SshClient(stringArr[2], "root", stringArr[3]))
+                //using (var ssh = new SshClient(stringArr[2], "root", stringArr[3]))
+                using (var ssh = new SshClient(stringArr[2], stringArr[6], stringArr[7]))
                 {
                     ssh.Connect();
 
@@ -66,16 +77,23 @@ public partial class _Default : Page
                     String strLog = ssh.CreateCommand("tail -" + intLinesToShow.ToString() + " " + stringArr[4]).Execute();
 
                     strLog = strLog.Replace("\n", "\r\n");
-                    txtOutput.Text = strLog;
 
-                    using (WebClient Client = new WebClient())
-                    {
-                        Client.DownloadFile("http://www.abc.com/file/song/a.mpeg", "a.mpeg");
-                    }
+                    txtOutput.Text = strLog.ToString();
 
+                    Guid objGUID = Guid.NewGuid();
 
-                    File.WriteAllText(strDesktop + "\\Log.txt", strLog);
-                    lblMessageData.Text = "";
+                    String strDestinationPath = strTempPath + stringArr[1] + objGUID.ToString() + ".log";
+                    File.WriteAllText(strDestinationPath, strLog);
+
+                    Response.ContentType = "text/plain";
+                    Response.AppendHeader("Content-Disposition", "attachment; filename=" + stringArr[1] + ".log");
+                    Response.TransmitFile(Server.MapPath("~/temp/" + stringArr[1] + objGUID.ToString() + ".log"));
+                    Response.Flush();
+                    Response.SuppressContent = true;
+                    ApplicationInstance.CompleteRequest();
+
+                    lblMessageData01.Text = "";
+                    lblMessageData02.Text = "";
 
                     ssh.Disconnect();
                 }
@@ -83,9 +101,14 @@ public partial class _Default : Page
         }
         catch (Exception ex)
         {
-            lblMessageData.Text = ex.ToString();
-        }
+            Guid objGUID = Guid.NewGuid();
+            String strException = ex.ToString();
 
+            File.WriteAllText(strLogPath + DateTime.Today.ToString("yyyyMMdd") + "-" + objGUID.ToString() + ".log", strException);
+
+            lblMessageData01.Text = "خطایی در سیستم رخ داده است. لطفا کد خطای زیر را به واحد استقرار ازسال نمایید.\r\n";
+            lblMessageData02.Text = DateTime.Today.ToString("yyyyMMdd") + "-" + objGUID.ToString();
+        }
     }
 
     protected void btnDownload_Click(object sender, EventArgs e)
@@ -94,7 +117,8 @@ public partial class _Default : Page
         {
             if ((lblIDData.Text == "") || (lblIPAddressData.Text == "") || (lblServerNameData.Text == ""))
             {
-                lblMessageData.Text = "Please select a server.";
+                lblMessageData01.Text = "Please select a server.";
+                lblMessageData02.Text = "";
             }
             else
             {
@@ -108,7 +132,8 @@ public partial class _Default : Page
                 String strFilePath = stringArr[4].Remove(stringArr[4].LastIndexOf("/"), stringArr[4].Length - stringArr[4].LastIndexOf("/"));
                 String strFileName = stringArr[4].Remove(0, stringArr[4].LastIndexOf("/") + 1);
 
-                using (var ssh = new SshClient(stringArr[2], "root", stringArr[3]))
+                //using (var ssh = new SshClient(stringArr[2], "root", stringArr[3]))
+                using (var ssh = new SshClient(stringArr[2], stringArr[6], stringArr[7]))
                 {
                     ssh.Connect();
 
@@ -119,36 +144,45 @@ public partial class _Default : Page
                 }
 
                 using (var objScpClient = new ScpClient(stringArr[2], "root", stringArr[3]))
+                using (var ssh = new SshClient(stringArr[2], stringArr[6], stringArr[7]))
                 {
                     objScpClient.Connect();
 
                     string objTempFile = Path.GetTempFileName();
                     FileInfo objFileInfo = new FileInfo(objTempFile);
 
-
+                    
                     objScpClient.Download(stringArr[4] + ".tgz", objFileInfo);
 
-                    //String strDestinationPath = strDesktop + "\\" + strFileName + ".tgz";
+                    Guid objGUID = Guid.NewGuid();
 
-                    //if (File.Exists(strDestinationPath) == true)
-                    //{
-                    //    File.Delete(strDestinationPath);
-                    //    objFileInfo.MoveTo(strDestinationPath);
-                    //}
-                    //else
-                    //{
-                    //    objFileInfo.MoveTo(strDestinationPath);
-                    //}
+                    String strDestinationPath = strTempPath + strFileName + objGUID.ToString() + ".tgz";
+
+                    objFileInfo.MoveTo(strDestinationPath);
 
                     objScpClient.Disconnect();
+
+                    Response.ContentType = "application/x-compressed";
+                    Response.AppendHeader("Content-Disposition", "attachment; filename=" + strFileName + ".tgz");
+                    Response.TransmitFile(Server.MapPath("~/temp/" + strFileName + objGUID.ToString() + ".tgz"));
+                    Response.Flush();
+                    Response.SuppressContent = true;
+                    ApplicationInstance.CompleteRequest();
                 }
 
-                lblMessageData.Text = "";
+                lblMessageData01.Text = "";
+                lblMessageData02.Text = "";
             }
         }
         catch (Exception ex)
         {
-            lblMessageData.Text = ex.ToString();
+            Guid objGUID = Guid.NewGuid();
+            String strException = ex.ToString();
+
+            File.WriteAllText(strLogPath + DateTime.Today.ToString("yyyyMMdd") + "-" + objGUID.ToString() + ".log", strException);
+
+            lblMessageData01.Text = "خطایی در سیستم رخ داده است. لطفا کد خطای زیر را به واحد استقرار ازسال نمایید.\r\n";
+            lblMessageData02.Text = DateTime.Today.ToString("yyyyMMdd") + "-" + objGUID.ToString();
         }
     }
 
@@ -159,6 +193,7 @@ public partial class _Default : Page
         dgridShowData.DataSource = clsServersDataManager.SelectServer(lblIDData.Text, lblProjectName.Text);
         dgridShowData.DataBind();
 
-        lblMessageData.Text = "";
+        lblMessageData01.Text = "";
+        lblMessageData02.Text = "";
     }
 }

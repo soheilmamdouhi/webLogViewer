@@ -38,6 +38,9 @@
         <div class="col-md-6">
             <h2>Server Data</h2>
             <p>
+                <asp:Label ID="lblStatus" runat="server" Font-Bold="True" Font-Size="Larger" ForeColor="Red" Text="Not Set"></asp:Label>
+            </p>
+            <p>
                 <asp:Label ID="lblID" runat="server" Font-Bold="True" Text="ID: "></asp:Label>
                 <asp:Label ID="lblIDData" runat="server"></asp:Label>
             </p>
@@ -54,14 +57,15 @@
             <p>
                 <asp:Label ID="lblMessages" runat="server" Font-Bold="True" Text="Messages:"></asp:Label>
 &nbsp;
-                <asp:Label ID="lblMessageData" runat="server" ForeColor="Red"></asp:Label>
+                <asp:Label ID="lblMessageData01" runat="server" ForeColor="Red"></asp:Label>
             </p>
             <p>
-                &nbsp;</p>
+                <asp:Label ID="lblMessageData02" runat="server" ForeColor="Red"></asp:Label>
+            </p>
             <p>
-                &nbsp;<asp:Button ID="btnRead" runat="server" Text="Read Log" OnClick="btnRead_Click" Width="130px" />
+                &nbsp;<asp:Button ID="btnRead" runat="server" Text="Read Log" OnClick="btnRead_Click" Width="130px" Enabled="False" />
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <asp:Button ID="btnDownload" runat="server" OnClick="btnDownload_Click" Text="Download Log" Width="130px" />
+                <asp:Button ID="btnDownload" runat="server" OnClick="btnDownload_Click" Text="Download Log" Width="130px" Enabled="False" />
             </p>
             <p>
                 <asp:TextBox ID="txtOutput" runat="server" Font-Size="Small" Height="500px" ReadOnly="True" TextMode="MultiLine" Width="100%" Wrap="False"></asp:TextBox>

@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29728.190
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "webLogViewer(1)", ".", "{F49E2D6D-633E-4E02-A1AD-9EEA57F67E36}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_15263"
+		Debug.AspNetCompiler.PhysicalPath = "..\webLogViewer\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_15263\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_15263"
+		Release.AspNetCompiler.PhysicalPath = "..\webLogViewer\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_15263\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "15263"
+		SlnRelativePath = "..\webLogViewer\"
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F49E2D6D-633E-4E02-A1AD-9EEA57F67E36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F49E2D6D-633E-4E02-A1AD-9EEA57F67E36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3C7AFC30-15E7-47B9-9573-50816DCA69E5}
+	EndGlobalSection
+EndGlobal
