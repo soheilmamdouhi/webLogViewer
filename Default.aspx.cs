@@ -33,11 +33,27 @@ public partial class _Default : Page
 
     protected void dgridShowData_SelectedIndexChanged(object sender, EventArgs e)
     {
+        DataTable objDataTable = new DataTable();
+
+        objDataTable = clsServersDataManager.SelectServer(dgridShowData.SelectedRow.Cells[1].Text);
+
+        stringArr = objDataTable.Rows[0].ItemArray.Select(arrServer => arrServer.ToString()).ToArray();
+
+        using (var ssh = new SshClient(stringArr[2], stringArr[6], stringArr[7]))
+        {
+            ssh.Connect();
+
+            lblTemp.Text = ssh.CreateCommand("wc -l " + stringArr[4] + " | awk '{print $1}'").Execute();
+
+            ssh.Disconnect();
+        }
+
         lblIDData.Text = dgridShowData.SelectedRow.Cells[1].Text;
         lblServerNameData.Text = dgridShowData.SelectedRow.Cells[2].Text;
         lblIPAddressData.Text = dgridShowData.SelectedRow.Cells[3].Text;
+
         btnRead.Enabled = true;
-        btnDownload.Enabled = true;
+        btnDownloadFull.Enabled = true;
         lblStatus.Text = "Set";
         lblStatus.ForeColor = System.Drawing.Color.Green;
 
@@ -56,46 +72,45 @@ public partial class _Default : Page
             }
             else
             {
-                String strDesktop = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
                 DataTable objDataTable = new DataTable();
 
                 objDataTable = clsServersDataManager.SelectServer(dgridShowData.SelectedRow.Cells[1].Text);
 
                 stringArr = objDataTable.Rows[0].ItemArray.Select(arrServer => arrServer.ToString()).ToArray();
 
-                //using (var ssh = new SshClient(stringArr[2], "root", stringArr[3]))
                 using (var ssh = new SshClient(stringArr[2], stringArr[6], stringArr[7]))
                 {
                     ssh.Connect();
 
-                    intStartLine = Int32.Parse(ssh.CreateCommand("wc -l " + stringArr[4] + " | awk '{print $1}'").Execute());
+                    //intStartLine = Int32.Parse(ssh.CreateCommand("wc -l " + stringArr[4] + " | awk '{print $1}'").Execute());
+
+                    intStartLine = Int32.Parse(lblTemp.Text);
 
                     int intLastLine = Int32.Parse(ssh.CreateCommand("wc -l " + stringArr[4] + " | awk '{print $1}'").Execute());
                     int intLinesToShow;
-                    intLinesToShow = (intLastLine - intStartLine) + 5;
 
-                    String strLog = ssh.CreateCommand("tail -" + intLinesToShow.ToString() + " " + stringArr[4]).Execute();
+                    //intLinesToShow = (intLastLine - intStartLine) + 5;
+                    intLinesToShow = intLastLine - intStartLine;
 
-                    strLog = strLog.Replace("\n", "\r\n");
+                    if (intLinesToShow == 0)
+                    {
+                        txtOutput.Text = "There is nothing to show.";
+                    }
+                    else
+                    {
+                        txtOutput.Text = "";
+                        String strLog = ssh.CreateCommand("tail -" + intLinesToShow.ToString() + " " + stringArr[4]).Execute();
 
-                    txtOutput.Text = strLog.ToString();
+                        strLog = strLog.Replace("\n", "\r\n");
 
-                    Guid objGUID = Guid.NewGuid();
+                        txtOutput.Text = strLog;
 
-                    String strDestinationPath = strTempPath + stringArr[1] + objGUID.ToString() + ".log";
-                    File.WriteAllText(strDestinationPath, strLog);
+                        lblMessageData01.Text = "";
+                        lblMessageData02.Text = "";
 
-                    Response.ContentType = "text/plain";
-                    Response.AppendHeader("Content-Disposition", "attachment; filename=" + stringArr[1] + ".log");
-                    Response.TransmitFile(Server.MapPath("~/temp/" + stringArr[1] + objGUID.ToString() + ".log"));
-                    Response.Flush();
-                    Response.SuppressContent = true;
-                    ApplicationInstance.CompleteRequest();
-
-                    lblMessageData01.Text = "";
-                    lblMessageData02.Text = "";
-
-                    ssh.Disconnect();
+                        ssh.Disconnect();
+                        btnDownloadLog.Enabled = true;
+                    }
                 }
             }
         }
@@ -106,7 +121,46 @@ public partial class _Default : Page
 
             File.WriteAllText(strLogPath + DateTime.Today.ToString("yyyyMMdd") + "-" + objGUID.ToString() + ".log", strException);
 
-            lblMessageData01.Text = "خطایی در سیستم رخ داده است. لطفا کد خطای زیر را به واحد استقرار ازسال نمایید.\r\n";
+            lblMessageData01.Text = "خطایی در سیستم رخ داده است. لطفا کد خطای زیر را به واحد نصب و راه اندازی ارسال نمایید.\r\n";
+            lblMessageData02.Text = DateTime.Today.ToString("yyyyMMdd") + "-" + objGUID.ToString();
+        }
+    }
+
+    protected void btnDownloadLog_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            if (txtOutput.Text != "There is nothing to show.")
+            {
+                DataTable objDataTable = new DataTable();
+
+                objDataTable = clsServersDataManager.SelectServer(dgridShowData.SelectedRow.Cells[1].Text);
+
+                stringArr = objDataTable.Rows[0].ItemArray.Select(arrServer => arrServer.ToString()).ToArray();
+
+                Guid objGUID = Guid.NewGuid();
+
+                String strDestinationPath = strTempPath + stringArr[1] + objGUID.ToString() + ".log";
+                File.WriteAllText(strDestinationPath, txtOutput.Text);
+
+                Response.ContentType = "text/plain";
+                Response.AppendHeader("Content-Disposition", "attachment; filename=" + stringArr[1] + ".log");
+                Response.TransmitFile(Server.MapPath("~/temp/" + stringArr[1] + objGUID.ToString() + ".log"));
+                Response.Flush();
+                Response.SuppressContent = true;
+                ApplicationInstance.CompleteRequest();
+
+                btnDownloadLog.Enabled = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Guid objGUID = Guid.NewGuid();
+            String strException = ex.ToString();
+
+            File.WriteAllText(strLogPath + DateTime.Today.ToString("yyyyMMdd") + "-" + objGUID.ToString() + ".log", strException);
+
+            lblMessageData01.Text = "خطایی در سیستم رخ داده است. لطفا کد خطای زیر را به واحد نصب و راه اندازی ارسال نمایید.\r\n";
             lblMessageData02.Text = DateTime.Today.ToString("yyyyMMdd") + "-" + objGUID.ToString();
         }
     }
@@ -132,7 +186,6 @@ public partial class _Default : Page
                 String strFilePath = stringArr[4].Remove(stringArr[4].LastIndexOf("/"), stringArr[4].Length - stringArr[4].LastIndexOf("/"));
                 String strFileName = stringArr[4].Remove(0, stringArr[4].LastIndexOf("/") + 1);
 
-                //using (var ssh = new SshClient(stringArr[2], "root", stringArr[3]))
                 using (var ssh = new SshClient(stringArr[2], stringArr[6], stringArr[7]))
                 {
                     ssh.Connect();
@@ -143,7 +196,7 @@ public partial class _Default : Page
                     ssh.Disconnect();
                 }
 
-                using (var objScpClient = new ScpClient(stringArr[2], "root", stringArr[3]))
+                using (var objScpClient = new ScpClient(stringArr[2], stringArr[6], stringArr[7]))
                 using (var ssh = new SshClient(stringArr[2], stringArr[6], stringArr[7]))
                 {
                     objScpClient.Connect();
@@ -181,7 +234,7 @@ public partial class _Default : Page
 
             File.WriteAllText(strLogPath + DateTime.Today.ToString("yyyyMMdd") + "-" + objGUID.ToString() + ".log", strException);
 
-            lblMessageData01.Text = "خطایی در سیستم رخ داده است. لطفا کد خطای زیر را به واحد استقرار ازسال نمایید.\r\n";
+            lblMessageData01.Text = "خطایی در سیستم رخ داده است. لطفا کد خطای زیر را به واحد نصب و راه اندازی ارسال نمایید.\r\n";
             lblMessageData02.Text = DateTime.Today.ToString("yyyyMMdd") + "-" + objGUID.ToString();
         }
     }
@@ -195,5 +248,6 @@ public partial class _Default : Page
 
         lblMessageData01.Text = "";
         lblMessageData02.Text = "";
+        txtOutput.Text = "";
     }
 }

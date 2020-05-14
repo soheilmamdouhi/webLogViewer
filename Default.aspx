@@ -53,7 +53,8 @@
                 <asp:Label ID="lblIPAddressData" runat="server"></asp:Label>
             </p>
             <p>
-                &nbsp;</p>
+                <asp:Label ID="lblTemp" runat="server" Visible="False"></asp:Label>
+            </p>
             <p>
                 <asp:Label ID="lblMessages" runat="server" Font-Bold="True" Text="Messages:"></asp:Label>
 &nbsp;
@@ -63,9 +64,10 @@
                 <asp:Label ID="lblMessageData02" runat="server" ForeColor="Red"></asp:Label>
             </p>
             <p>
-                &nbsp;<asp:Button ID="btnRead" runat="server" Text="Read Log" OnClick="btnRead_Click" Width="130px" Enabled="False" />
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <asp:Button ID="btnDownload" runat="server" OnClick="btnDownload_Click" Text="Download Log" Width="130px" Enabled="False" />
+                &nbsp;<asp:Button ID="btnRead" runat="server" Text="Show Log" OnClick="btnRead_Click" Width="130px" Enabled="False" />
+            &nbsp;&nbsp;&nbsp;&nbsp;<asp:Button ID="btnDownloadLog" runat="server" Enabled="False" OnClick="btnDownloadLog_Click" Text="Download Log" Width="130px" />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <asp:Button ID="btnDownloadFull" runat="server" OnClick="btnDownload_Click" Text="Download Log File" Width="130px" Enabled="False" />
             </p>
             <p>
                 <asp:TextBox ID="txtOutput" runat="server" Font-Size="Small" Height="500px" ReadOnly="True" TextMode="MultiLine" Width="100%" Wrap="False"></asp:TextBox>
