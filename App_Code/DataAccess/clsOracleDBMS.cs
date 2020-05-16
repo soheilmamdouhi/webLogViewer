@@ -13,14 +13,16 @@ public class clsOracleDBMS
         objOracleCommand = new OracleCommand();
 
         objOracleCommand.Connection = objOracleConnection;
-        objOracleConnection.ConnectionString = "Data Source = " + 
-                                               "(DESCRIPTION = " + 
-                                               "(ADDRESS = (PROTOCOL = TCP)" +
-                                               "(HOST = 192.9.200.121)" +
-                                               "(PORT = 1521))" + 
-                                               "(CONNECT_DATA = " +
-                                               "(SERVICE_NAME = mcdsdb)));" +
-                                               "User Id = passmg; Password = passmg;";
+        //objOracleConnection.ConnectionString = "Data Source = " + 
+        //                                       "(DESCRIPTION = " + 
+        //                                       "(ADDRESS = (PROTOCOL = TCP)" +
+        //                                       "(HOST = 192.9.200.121)" +
+        //                                       "(PORT = 1521))" + 
+        //                                       "(CONNECT_DATA = " +
+        //                                       "(SERVICE_NAME = mcdsdb)));" +
+        //                                       "User Id = passmg; Password = passmg;";
+
+        objOracleConnection.ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["LogViewerDSIIS"].ConnectionString;
     }
 
     public void ExecuteSQL(String strSQL)
