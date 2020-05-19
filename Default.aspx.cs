@@ -28,6 +28,19 @@ public partial class _Default : Page
 
             dgridProjects.DataSource = clsServersDataManager.SelectProjects();
             dgridProjects.DataBind();
+
+            //lblMessageData01.Text = Request.UserHostAddress;
+            //lblMessageData02.Text = Request.UserHostName;
+            //lblMessageData02.Text = Request.ServerVariables["REMOTE_HOST"];
+
+            clsLog objLog = new clsLog();
+
+            objLog.strIP = Request.UserHostAddress;
+            objLog.strLog_Date = DateTime.Now.ToString();
+            objLog.strTarget_Name = "";
+            objLog.strAction = "L";
+
+            clsLogManager.InsertLog(objLog);
         }
     }
 
@@ -54,11 +67,13 @@ public partial class _Default : Page
 
         btnRead.Enabled = true;
         btnDownloadFull.Enabled = true;
+        btnDownloadLog.Enabled = false;
         lblStatus.Text = "Set";
         lblStatus.ForeColor = System.Drawing.Color.Green;
 
         lblMessageData01.Text = "";
         lblMessageData02.Text = "";
+        txtOutput.Text = "";
     }
 
     protected void btnRead_Click(object sender, EventArgs e)
@@ -111,6 +126,19 @@ public partial class _Default : Page
                         ssh.Disconnect();
                         btnDownloadLog.Enabled = true;
                     }
+
+                    lblStatus.Text = "Not Set";
+                    lblStatus.ForeColor = System.Drawing.Color.Red;
+                    btnRead.Enabled = false;
+
+                    clsLog objLog = new clsLog();
+
+                    objLog.strIP = Request.UserHostAddress;
+                    objLog.strLog_Date = DateTime.Now.ToString();
+                    objLog.strTarget_Name = stringArr[1];
+                    objLog.strAction = "R";
+
+                    clsLogManager.InsertLog(objLog);
                 }
             }
         }
@@ -221,6 +249,15 @@ public partial class _Default : Page
                     Response.Flush();
                     Response.SuppressContent = true;
                     ApplicationInstance.CompleteRequest();
+
+                    clsLog objLog = new clsLog();
+
+                    objLog.strIP = Request.UserHostAddress;
+                    objLog.strLog_Date = DateTime.Now.ToString();
+                    objLog.strTarget_Name = stringArr[1];
+                    objLog.strAction = "D";
+
+                    clsLogManager.InsertLog(objLog);
                 }
 
                 lblMessageData01.Text = "";
