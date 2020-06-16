@@ -58,7 +58,7 @@
             <p>
                 <asp:Label ID="lblMessages" runat="server" Font-Bold="True" Text="Messages:"></asp:Label>
 &nbsp;
-                <asp:Label ID="lblMessageData01" runat="server" ForeColor="Red"></asp:Label>
+                <asp:Label ID="lblMessageData01" runat="server" ForeColor="Red" style="text-align: right;"></asp:Label>
             </p>
             <p>
                 <asp:Label ID="lblMessageData02" runat="server" ForeColor="Red"></asp:Label>

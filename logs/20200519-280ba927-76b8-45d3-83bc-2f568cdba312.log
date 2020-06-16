@@ -1,0 +1,3 @@
+System.Exception: Unknown Error - Please tell to your site Administrator.
+   at clsLogManager.InsertLog(clsLog objLog) in d:\users\soheil\Documents\GitHub\webLogViewer\App_Code\DataAccess\clsLogManager.cs:line 23
+   at _Default.btnRead_Click(Object sender, EventArgs e) in d:\users\soheil\Documents\GitHub\webLogViewer\Default.aspx.cs:line 141

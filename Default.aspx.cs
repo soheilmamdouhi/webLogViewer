@@ -14,6 +14,8 @@ public partial class _Default : Page
     public int intID;
     public int intStartLine;
     public String[] stringArr = new String[5];
+    //public String strTempPath = @"d:\Users\soheil\Documents\GitHub\webLogViewer\temp\";
+    //public String strLogPath = @"d:\Users\soheil\Documents\GitHub\webLogViewer\logs\";
     public String strTempPath = "C:\\webLogViewer\\temp\\";
     public String strLogPath = "C:\\webLogViewer\\logs\\";
 
@@ -28,10 +30,6 @@ public partial class _Default : Page
 
             dgridProjects.DataSource = clsServersDataManager.SelectProjects();
             dgridProjects.DataBind();
-
-            //lblMessageData01.Text = Request.UserHostAddress;
-            //lblMessageData02.Text = Request.UserHostName;
-            //lblMessageData02.Text = Request.ServerVariables["REMOTE_HOST"];
 
             clsLog objLog = new clsLog();
 
@@ -97,14 +95,11 @@ public partial class _Default : Page
                 {
                     ssh.Connect();
 
-                    //intStartLine = Int32.Parse(ssh.CreateCommand("wc -l " + stringArr[4] + " | awk '{print $1}'").Execute());
-
                     intStartLine = Int32.Parse(lblTemp.Text);
 
                     int intLastLine = Int32.Parse(ssh.CreateCommand("wc -l " + stringArr[4] + " | awk '{print $1}'").Execute());
                     int intLinesToShow;
 
-                    //intLinesToShow = (intLastLine - intStartLine) + 5;
                     intLinesToShow = intLastLine - intStartLine;
 
                     if (intLinesToShow == 0)
@@ -149,7 +144,7 @@ public partial class _Default : Page
 
             File.WriteAllText(strLogPath + DateTime.Today.ToString("yyyyMMdd") + "-" + objGUID.ToString() + ".log", strException);
 
-            lblMessageData01.Text = "خطایی در سیستم رخ داده است. لطفا کد خطای زیر را به همراه ID سرور به واحد نصب و راه اندازی ارسال نمایید.\r\n";
+            lblMessageData01.Text = "خطایی در سیستم رخ داده است. لطفا کد خطای زیر را به همراه آی دی سرور به واحد نصب و راه اندازی ارسال نمایید.\r\n";
             lblMessageData02.Text = DateTime.Today.ToString("yyyyMMdd") + "-" + objGUID.ToString();
         }
     }
@@ -188,7 +183,7 @@ public partial class _Default : Page
 
             File.WriteAllText(strLogPath + DateTime.Today.ToString("yyyyMMdd") + "-" + objGUID.ToString() + ".log", strException);
 
-            lblMessageData01.Text = "خطایی در سیستم رخ داده است. لطفا کد خطای زیر را به واحد نصب و راه اندازی ارسال نمایید.\r\n";
+            lblMessageData01.Text = "خطایی در سیستم رخ داده است. لطفا کد خطای زیر را به همراه آی دی سرور به واحد نصب و راه اندازی ارسال نمایید.\r\n";
             lblMessageData02.Text = DateTime.Today.ToString("yyyyMMdd") + "-" + objGUID.ToString();
         }
     }
@@ -271,7 +266,7 @@ public partial class _Default : Page
 
             File.WriteAllText(strLogPath + DateTime.Today.ToString("yyyyMMdd") + "-" + objGUID.ToString() + ".log", strException);
 
-            lblMessageData01.Text = "خطایی در سیستم رخ داده است. لطفا کد خطای زیر را به واحد نصب و راه اندازی ارسال نمایید.\r\n";
+            lblMessageData01.Text = "خطایی در سیستم رخ داده است. لطفا کد خطای زیر را به همراه آی دی سرور به واحد نصب و راه اندازی ارسال نمایید.\r\n";
             lblMessageData02.Text = DateTime.Today.ToString("yyyyMMdd") + "-" + objGUID.ToString();
         }
     }
