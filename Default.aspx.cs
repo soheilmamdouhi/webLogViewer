@@ -14,8 +14,8 @@ public partial class _Default : Page
     public int intID;
     public int intStartLine;
     public String[] stringArr = new String[5];
-    public String strTempPath = "d:\\Users\\soheil\\Documents\\GitHub\\webLogViewer\\temp\\";
-    public String strLogPath = "d:\\Users\\soheil\\Documents\\GitHub\\webLogViewer\\logs\\";
+    public String strTempPath = "C:\\webLogViewer\\temp\\";
+    public String strLogPath = "C:\\webLogViewer\\logs\\";
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -149,7 +149,7 @@ public partial class _Default : Page
 
             File.WriteAllText(strLogPath + DateTime.Today.ToString("yyyyMMdd") + "-" + objGUID.ToString() + ".log", strException);
 
-            lblMessageData01.Text = "خطایی در سیستم رخ داده است. لطفا کد خطای زیر را به واحد نصب و راه اندازی ارسال نمایید.\r\n";
+            lblMessageData01.Text = "خطایی در سیستم رخ داده است. لطفا کد خطای زیر را به همراه ID سرور به واحد نصب و راه اندازی ارسال نمایید.\r\n";
             lblMessageData02.Text = DateTime.Today.ToString("yyyyMMdd") + "-" + objGUID.ToString();
         }
     }
